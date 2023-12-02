@@ -9,7 +9,7 @@ import (
 )
 
 /* 
- *Helper to error check
+ * Helper to error check
  */
 func check(e error){
 	if e != nil {
@@ -48,16 +48,23 @@ func getGame(line string) int{
 	return maxColour
 }
 
-
+/**
+ * Day 2: Part 1 and 2
+ * Sample Input: Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+ * 				 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+ * 				 Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+ * 				 Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+ * 				 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+ */
 func main(){
 // Read input file
 	input_file, err := os.Open("day2_input.txt")
 	check(err)
 	defer input_file.Close()
-
-	sumPart1 := 0
+	sumPart1, sumPart2 := 0, 0
 	line := ""
 	colours := [3]string{"blue", "red", "green"}
+	// Set up input for Part 1
 	maxCubeInput := make(map[string]int)
 	maxCubeInput["blue"] = 14
 	maxCubeInput["red"] = 12
@@ -67,21 +74,26 @@ func main(){
 	for scanner.Scan(){
 		line = scanner.Text()
 		gameId := getGame(line)
+		power := 1
 		isGamePossible := true
+		// Get max occurrence of each colour in a game
 		for _, colour := range colours{
-			if getMaxOfColour(line, colour) > maxCubeInput[colour]{
+			maxOfColour := getMaxOfColour(line, colour)
+			power *= maxOfColour
+			if maxOfColour > maxCubeInput[colour]{
 				isGamePossible = false
-				break
 			}
 		}
+		// If game is possible, add ID to sum for Part 1
 		if isGamePossible{
 			sumPart1 += gameId
 		}
+		sumPart2 += power
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Scan file error: %v", err)
         return	
 	}
 	log.Println("Part 1. Sum of games:", sumPart1)
-	log.Println("Done.")
+	log.Println("Part 2. Sum of powers:", sumPart2)
 }
